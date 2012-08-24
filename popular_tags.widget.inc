@@ -8,8 +8,8 @@
  * @param type $context 
  */
 function _popular_tags_inject(&$element, $context) {
-  $js = drupal_get_path('module', 'popular_tags') . '/popular_tags.js';
-  drupal_add_js($js);
+  drupal_add_js(drupal_get_path('module', 'popular_tags') . '/popular_tags.js');
+  drupal_add_css(drupal_get_path('module', 'popular_tags') . '/popular_tags.css');
   $vname = $context['field']['settings']['allowed_values'][0]['vocabulary'];
   $terms = _popular_tags_get_terms($vname);
   $div = '<div class="tag-terms">';

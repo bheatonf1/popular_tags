@@ -1,41 +1,71 @@
 <?php
 
+/**
+ * Implements hook_form_field_ui_field_edit_form_alter(). Which allows us to
+ * inject a checkbox in the field instance's settings form. This chekcbox, when
+ * checked, will add clickable popular tags to any tag autocomplete widget.
+ * 
+ * @param type $form
+ * @param type $form_state
+ * @param type $form_id 
+ */
 function popular_tags_form_field_ui_field_edit_form_alter(&$form, &$form_state, $form_id) {
-  $instance = $form['#instance'];
-  if($instance['widget']['type'] == 'taxonomy_autocomplete') {
+  $instance = $form['#instance']; // field instance
+  if ($instance['widget']['type'] == 'taxonomy_autocomplete') {
+    // if this is a taxonomy_autocomplete widget then add the popular_tags
+    // checkbox to the field edit form. We don't have to do anything to save
+    // this setting since the form element path is insta/widget/settings/...
     $form['instance']['widget']['settings']['popular_tags'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Use Clickable Popular Tags'),
-      '#description' => t('Present the users with most popular terms and allow them to select tags by clicking on them.'),
-      '#default_value' => @$instance['widget']['settings']['popular_tags'],
+        '#type' => 'checkbox',
+        '#title' => t('Use Clickable Popular Tags'),
+        '#description' => t('Present the users with most popular terms and allow them to select tags by clicking on them.'),
+        '#default_value' => @$instance['widget']['settings']['popular_tags'],
     );
   }
 }
 
+/**
+ * Implements hook_field_widget_form_alter(). Alters any form where a
+ * taxonomy_autocomplete widget is used with popular_tags setting ON.
+ * 
+ * @param type $element
+ * @param type $form_state
+ * @param type $context 
+ */
 function popular_tags_field_widget_form_alter(&$element, &$form_state, $context) {
-  if($context['instance']['widget']['type'] == 'taxonomy_autocomplete' && !empty($context['instance']['widget']['settings']['popular_tags'])) {
+  if ($context['instance']['widget']['type'] == 'taxonomy_autocomplete' && !empty($context['instance']['widget']['settings']['popular_tags'])) {
     _popular_tags_inject($element, $context);
   }
 }
 
+/**
+ * Utility function to inject the popular tags functionality into a form
+ * element.
+ * 
+ * @param array $element
+ * @param type $context 
+ */
 function _popular_tags_inject(&$element, $context) {
   $js = drupal_get_path('module', 'popular_tags') . '/popular_tags.js';
   drupal_add_js($js);
   $vname = $context['field']['settings']['allowed_values'][0]['vocabulary'];
   $terms = _popular_tags_get_terms($vname);
   $div = '<div class="tag-terms">';
-  foreach($terms as $tid => $term) {
+  foreach ($terms as $tid => $term) {
     $div .= t('<a class="term" href="#" title="@term">@term</a>', array('@term' => $term));
   }
   $div .= '</div>';
   $element['#description'] = t('You can type your own tags, or choose from the most commonly used tag below.') . $div;
 }
 
-define('SQL_POPULAR_TERMS', '');
-define('SQL_POPULAR_TERMS_UNLIMITED', '');
-
+/**
+ * Utility function to get the array of popular terms (key = tid, value = term name).
+ * @param type $vname
+ * @param type $count
+ * @return type 
+ */
 function _popular_tags_get_terms($vname, $count = NULL) {
-  if(!isset($count)) {
+  if (!isset($count)) {
     $count = variable_get('popular_tag_terms_limit', 10);
   }
   $sql = <<<__SQL__
@@ -50,7 +80,7 @@ __SQL__;
   $params = array();
   $params[':vname'] = $vname;
   // TODO: there is a defect here. I'm not able to use "LIMIT :lim". I get a SQL syntax error. Don't know why.
-  if(FALSE && $count !== 0) {
+  if (FALSE && $count !== 0) {
     $sql .= ' LIMIT :lim';
     $params[':lim'] = $count;
   }

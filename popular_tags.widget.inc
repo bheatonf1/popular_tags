@@ -41,12 +41,11 @@ ORDER BY COUNT(tn.tid) DESC
 __SQL__;
   $params = array();
   $params[':vname'] = $vname;
-  // TODO: there is a defect here. I'm not able to use "LIMIT :lim". I get a SQL syntax error. Don't know why.
-  if (FALSE && $count !== 0) {
-    $sql .= ' LIMIT :lim';
-    $params[':lim'] = $count;
+  if ($count !== 0) {
+    $query = db_query_range($sql, 0, $count, $params);
+  } else {
+    $query = db_query($sql, $params);
   }
-  $query = db_query($sql, $params);
   $terms = $query->fetchAllKeyed();
   return $terms;
 }

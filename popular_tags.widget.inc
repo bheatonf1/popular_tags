@@ -1,4 +1,9 @@
 <?php
+ /**
+ * @file
+ * Functions for manipulating taxonomy_autocomplete widget to add
+ * clickable/popular tags.
+ */
 
 /**
  * Utility function to inject the popular tags functionality into a form
@@ -43,7 +48,8 @@ __SQL__;
   $params[':vname'] = $vname;
   if ($count !== 0) {
     $query = db_query_range($sql, 0, $count, $params);
-  } else {
+  }
+  else {
     $query = db_query($sql, $params);
   }
   $terms = $query->fetchAllKeyed();

@@ -43,7 +43,8 @@ function popular_tags_form_field_ui_field_edit_form_alter(&$form, &$form_state, 
         '#default_value' => @$instance['widget']['settings']['popular_tags']['showhide'],
         '#states' => array(
             'visible' => array(
-                ':input[name="instance[widget][settings][popular_tags][use]"]' => array('checked' => TRUE)
+                ':input[name="instance[widget][settings][popular_tags][use]"]' => array('checked' => TRUE),
+                ':input[name="instance[widget][settings][popular_tags][limit]"]' => array('!value' => ''),
             ),
         ),
     );

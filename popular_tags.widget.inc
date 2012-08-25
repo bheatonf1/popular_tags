@@ -75,7 +75,8 @@ __SQL__;
   $params[':vname'] = $vname;
   if (!empty($limit) && !$all) {
     $query = db_query_range($sql, 0, $limit, $params);
-  } else {
+  }
+  else {
     $query = db_query($sql, $params);
   }
   $terms = $query->fetchAllAssoc('tid');

@@ -12,12 +12,15 @@
  * This chekcbox, when checked, will add clickable popular tags to any tag
  * autocomplete widget.
  *
- * @param array $form form to alter
- * @param array $form_state not used
- * @param string $form_id not used
+ * @param array $form
+ * form to alter
+ * @param array $form_state
+ * not used
+ * @param string $form_id
+ * not used
  */
 function popular_tags_form_field_ui_field_edit_form_alter(&$form, &$form_state, $form_id) {
-  $instance = $form['#instance']; // Field instance
+  $instance = $form['#instance']; // Field instance.
   if ($instance['widget']['type'] == 'taxonomy_autocomplete') {
     /* If this is a taxonomy_autocomplete widget then add the popular_tags
      * checkbox to the field edit form. We don't have to do anything to save
@@ -64,9 +67,12 @@ function popular_tags_form_field_ui_field_edit_form_alter(&$form, &$form_state, 
  * Alters any form where a taxonomy_autocomplete widget is used with
  * popular_tags setting ON.
  *
- * @param array $element form element to alter
- * @param array $form_state not used
- * @param array $context form element context
+ * @param array $element
+ * form element to alter
+ * @param array $form_state
+ * not used
+ * @param array $context
+ * form element context
  */
 function popular_tags_field_widget_form_alter(&$element, &$form_state, $context) {
   if ($context['instance']['widget']['type'] == 'taxonomy_autocomplete' && !empty($context['instance']['widget']['settings']['popular_tags']['use'])) {

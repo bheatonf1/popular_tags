@@ -64,7 +64,7 @@ function popular_tags_form_field_ui_field_edit_form_alter(&$form, &$form_state, 
 
 /**
  * Implements hook_field_widget_form_alter().
- * 
+ *
  * Alters any form where a taxonomy_autocomplete widget is used with
  * popular_tags setting ON.
  *

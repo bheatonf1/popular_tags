@@ -7,8 +7,7 @@
  */
 
 /**
- * Utility function to inject the popular tags functionality into a form
- * element.
+ * Util function to inject the popular tags functionality into a form element.
  *
  * @param array $element
  *   form element
@@ -58,8 +57,7 @@ function _popular_tags_inject(&$element, $context) {
 }
 
 /**
- * Utility function to get the array of popular terms (key = tid, value = term
- * name).
+ * Util func to get the array of popular terms (key = tid, value = term name).
  *
  * @param string $vname
  *   name of the vocabulary
@@ -67,7 +65,7 @@ function _popular_tags_inject(&$element, $context) {
  *   number of tags/terms to fetch (NULL if want default)
  * @param boolean $all
  *   flag set to TRUE if ALL tags/terms should be fetched
- * 
+ *
  * @return array
  *   fetched terms
  */

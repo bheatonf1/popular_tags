@@ -10,9 +10,9 @@
  * Utility function to inject the popular tags functionality into a form element.
  *
  * @param array $element
- * form element
+ *   form element
  * @param array $context
- * form element context
+ *   form element context
  */
 function _popular_tags_inject(&$element, $context) {
   drupal_add_js(drupal_get_path('module', 'popular_tags') . '/popular_tags.js');
@@ -60,13 +60,13 @@ function _popular_tags_inject(&$element, $context) {
  * Utility function to get the array of popular terms (key = tid, value = term name).
  *
  * @param string $vname
- * name of the vocabulary
+ *   name of the vocabulary
  * @param int $limit
- * number of tags/terms to fetch (NULL if want default)
+ *   number of tags/terms to fetch (NULL if want default)
  * @param boolean $all
- * flag set to TRUE if ALL tags/terms should be fetched
+ *   flag set to TRUE if ALL tags/terms should be fetched
  * @return array
- * fetched terms 
+ *   fetched terms 
  */
 function _popular_tags_get_terms($vname, $limit = NULL, $all = FALSE) {
   $sql = <<<__SQL__

@@ -13,11 +13,11 @@
  * autocomplete widget.
  *
  * @param array $form
- * form to alter
+ *   form to alter
  * @param array $form_state
- * not used
+ *   not used
  * @param string $form_id
- * not used
+ *   not used
  */
 function popular_tags_form_field_ui_field_edit_form_alter(&$form, &$form_state, $form_id) {
   $instance = $form['#instance']; // Field instance.
@@ -68,11 +68,11 @@ function popular_tags_form_field_ui_field_edit_form_alter(&$form, &$form_state, 
  * popular_tags setting ON.
  *
  * @param array $element
- * form element to alter
+ *   form element to alter
  * @param array $form_state
- * not used
+ *   not used
  * @param array $context
- * form element context
+ *   form element context
  */
 function popular_tags_field_widget_form_alter(&$element, &$form_state, $context) {
   if ($context['instance']['widget']['type'] == 'taxonomy_autocomplete' && !empty($context['instance']['widget']['settings']['popular_tags']['use'])) {

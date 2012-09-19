@@ -4,7 +4,8 @@ This module allows the users to select taxonomy terms/tags by just clicking on
 them rather than typing them (auto-complete) or selecting them from a select
 box/checkbox/radio etc. It shows them a list of tags, sorted by popularity
 (defined as how many nodes are tagged with it), up to a configurable maximum
-number.
+number. Also, when you hover over a listed tag, it shows how many times it has
+been used.
 
 This helps the user see what the most commonly used tags, rather than having
 to guess. It also avoids creation of numerous closely related and similar tags

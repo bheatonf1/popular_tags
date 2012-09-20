@@ -77,7 +77,7 @@ INNER JOIN {taxonomy_vocabulary} tv ON (td.vid = tv.vid)
 LEFT JOIN {taxonomy_index} tn ON (tn.tid = td.tid)
 WHERE tv.name = :vname
 GROUP BY td.tid
-ORDER BY count DESC
+ORDER BY count DESC, name
 __SQL__;
   $params = array();
   $params[':vname'] = $vname;

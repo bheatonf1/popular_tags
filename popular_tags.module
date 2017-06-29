@@ -6,6 +6,16 @@
  */
 
 use \Drupal\Core\Form\FormStateInterface;
+use \Drupal\popular_tags\Plugin\Field\FieldWidget\EntityReferenceAutocompleteTagsWidget;
+
+/**
+ * Implements hook_field_widget_info_alter().
+ */
+function popular_tags_field_widget_info_alter(array &$info) {
+  if (isset($info['entity_reference_autocomplete_tags'])) {
+    $info['entity_reference_autocomplete_tags']['class'] = EntityReferenceAutocompleteTagsWidget::class;
+  }
+}
 
 /**
  * Implements hook_field_widget_form_alter().

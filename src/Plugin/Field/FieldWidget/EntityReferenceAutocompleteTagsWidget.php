@@ -52,18 +52,20 @@ class EntityReferenceAutocompleteTagsWidget extends \Drupal\Core\Field\Plugin\Fi
         ),
       ),
     );
-    $element['popular_tags']['showhide'] = array(
+    $element['popular_tags']['showhide'] = [
       '#type' => 'checkbox',
       '#title' => t('Show/Hide Links?'),
       '#description' => t('Should the user be presented with "Show All" and "Show Popular" links? These links allow the user to view only the popular tags, or view all tags.'),
       '#default_value' => $settings['popular_tags']['showhide'],
-      '#states' => array(
-        'visible' => array(
-          ':input[name="fields[field_tags][settings_edit_form][settings][popular_tags][use]"]' => array('checked' => TRUE),
-          ':input[name="fields[field_tags][settings_edit_form][settings][popular_tags][limit]"]' => array('!value' => '', '!value' => 0),
-        ),
-      ),
-    );
+      '#states' => [
+        'visible' => [
+          ':input[name="fields[field_tags][settings_edit_form][settings][popular_tags][use]"]' => ['checked' => TRUE],
+          [':input[name="fields[field_tags][settings_edit_form][settings][popular_tags][limit]"]' => ['!value' => (string) '']],
+          'or',
+          [':input[name="fields[field_tags][settings_edit_form][settings][popular_tags][limit]"]' => ['!value' => (string) 0]],
+        ],
+      ],
+    ];
     return $element;
   }
 }

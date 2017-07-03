@@ -1,5 +1,7 @@
 <?php
 
+use Drupal\Core\Field\Plugin\Field\FieldWidget\EntityReferenceAutocompleteTagsWidget;
+
 /**
  * @file
  * Functions for manipulating taxonomy_autocomplete widget to add
@@ -15,51 +17,56 @@
  *   form element context
  */
 function _popular_tags_inject(&$element, $context) {
-  drupal_add_js(drupal_get_path('module', 'popular_tags') . '/popular_tags.js');
-  drupal_add_css(drupal_get_path('module', 'popular_tags') . '/popular_tags.css');
-  $field_name = $element['#field_name'];
-  $vname = $context['field']['settings']['allowed_values'][0]['vocabulary'];
-  $limit = @$context['instance']['widget']['settings']['popular_tags']['limit'];
-  $showhide = @$context['instance']['widget']['settings']['popular_tags']['showhide'];
-  if ($showhide) {
-    $data['popular_tags'][$field_name]['limit'] = $limit;
-    drupal_add_js($data, 'setting');
-  }
-  $terms = _popular_tags_get_terms($vname, $limit, $showhide);
-  $tag_terms = '<div class="tag-terms">';
-  $classes[] = 'term';
-  if (!empty($limit) && !empty($showhide)) {
-    $classes[] = 'popular';
-  }
-  $count = 0;
-  foreach ($terms as $tid => $term) {
-    $count++;
-    if (!empty($limit) && !empty($showhide) && $count > $limit) {
-      $key = array_search('popular', $classes);
-      if ($key !== FALSE) {
-        unset($classes[$key]);
+  if ($context['widget'] instanceof EntityReferenceAutocompleteTagsWidget) {
+    $element['#attached']['library'][] = 'popular_tags/popular_tags';
+    // Popular Tags settings will be stored in third_party_settings
+    $settings = $context['widget']->getThirdPartySettings('popular_tags');
+    $field_definition = $context['items']->getFieldDefinition();
+    $field_name = $field_definition->get('field_name');
+    // There may be multiple targeted vocabularies
+    $vocabs = $element['target_id']['#selection_settings']['target_bundles'];
+    $limit = @$settings['popular_tags']['limit'];
+    $showhide = @$settings['popular_tags']['showhide'];;
+    if ($showhide) {
+      $data['popular_tags'][$field_name]['limit'] = $limit;
+      $element['#attached']['drupalSettings'] = $data;
+    }
+    $terms = _popular_tags_get_terms($vocabs, $limit, $showhide);
+    $tag_terms = '<div class="tag-terms">';
+    $classes[] = 'term';
+    if (!empty($limit) && !empty($showhide)) {
+      $classes[] = 'popular';
+    }
+    $count = 0;
+    foreach ($terms as $tid => $term) {
+      $count++;
+      if (!empty($limit) && !empty($showhide) && $count > $limit) {
+        $key = array_search('popular', $classes);
+        if ($key !== FALSE) {
+          unset($classes[$key]);
+        }
       }
+
+      // a term name containing comma needs to be quoted
+      if (strpos($term->name, ',') !== FALSE) {
+        $term->name = '"' . $term->name . '"';
+      }
+
+      $tag_terms .= t('<a class="@classes" href="#" title="x@freq" >@term</a>', array(
+        '@term' => $term->name,
+        '@freq' => $term->freq,
+        '@classes' => implode(' ', $classes),
+      ));
     }
-    
-    // a term name containing comma needs to be quoted
-    if(strpos($term->name, ',') !== FALSE) {
-      $term->name = '"'. $term->name . '"';
+    $tag_terms .= '</div>';
+    $html = '<div class="popular-tags">' . t('You can type your own tags, or choose from the most commonly used tags below.');
+    if (!empty($limit) && !empty($showhide)) {
+      $html .= '<a href="#" class="show-all-terms">' . t('Show All Terms') . '</a>';
+      $html .= '<a href="#" class="show-popular-terms">' . t('Show Popular Terms') . '</a>';
     }
-    
-    $tag_terms .= t('<a class="@classes" href="#" title="x@freq" >@term</a>', array(
-      '@term' => $term->name,
-      '@freq' => $term->freq,
-      '@classes' => implode(' ', $classes),
-    ));
+    $html .= $tag_terms . '</div>';
+    $element['#description'] = isset($element['#description']) ? $element['#description'] . $html : $html;
   }
-  $tag_terms .= '</div>';
-  $html = '<div class="popular-tags">' . t('You can type your own tags, or choose from the most commonly used tags below.');
-  if (!empty($limit) && !empty($showhide)) {
-    $html .= '<a href="#" class="show-all-terms">' . t('Show All Terms') . '</a>';
-    $html .= '<a href="#" class="show-popular-terms">' . t('Show Popular Terms') . '</a>';
-  }
-  $html .= $tag_terms . '</div>';
-  $element['#description'] = isset($element['#description']) ? $element['#description'] . $html : $html;
 }
 
 /**
@@ -75,20 +82,21 @@ function _popular_tags_inject(&$element, $context) {
  * @return array
  *   fetched terms
  */
-function _popular_tags_get_terms($vname, $limit = NULL, $all = FALSE) {
-  $query = db_select('taxonomy_term_data', 'td');
-  $query->fields('td', array('tid', 'name'));
-  $query->innerJoin('taxonomy_vocabulary', 'tv', 'tv.vid = td.vid');
+function _popular_tags_get_terms($vocabs, $limit = NULL, $all = FALSE) {
+  $query = \Drupal::database()->select('taxonomy_term_data', 'td');
+  $query->fields('td', array('tid'));
   $query->leftJoin('taxonomy_index', 'tn', 'tn.tid = td.tid');
+  $query->leftJoin('taxonomy_term_field_data', 'ttfd', 'td.tid = ttfd.tid');
+  $query->fields('ttfd', array('name'));
   $query->addExpression('COUNT(tn.tid)', 'freq');
-  $query->condition('tv.machine_name', $vname);
-  $query->groupBy('td.tid');
-  $query->orderBy('freq', 'DESC');
-  $query->orderBy('name');
-  if (!empty($limit) && !$all) {
-    $query->range(0, $limit);
-  }
-
+//  $query->condition('td.vname', $vocabs, 'IN');
+//  $query->groupBy('td.tid');
+//  $query->orderBy('freq', 'DESC');
+////  $query->orderBy('name');
+//  if (!empty($limit) && !$all) {
+//    $query->range(0, $limit);
+//  }
   $terms = $query->execute()->fetchAllAssoc('tid');
+  ksm($terms);
   return $terms;
 }

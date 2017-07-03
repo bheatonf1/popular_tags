@@ -1,0 +1,12 @@
+popular_tags:
+  version: VERSION
+  css:
+    component:
+      popular_tags.css: {}
+      popular_tags-rtl.css: {}
+  js:
+    popular_tags.js: {}
+  dependencies:
+    - core/drupal.ajax
+    - core/jquery.ui.autocomplete
+

@@ -65,7 +65,7 @@ function _popular_tags_inject(&$element, $context) {
       $html .= '<a href="#" class="show-popular-terms">' . t('Show Popular Terms') . '</a>';
     }
     $html .= $tag_terms . '</div>';
-    $element['#description'] = isset($element['#description']) ? $element['#description'] . $html : $html;
+    $element['target_id']['#description'] = isset($element['#description']) ? $element['#description'] . $html : $html;
   }
 }
 
@@ -89,14 +89,14 @@ function _popular_tags_get_terms($vocabs, $limit = NULL, $all = FALSE) {
   $query->leftJoin('taxonomy_term_field_data', 'ttfd', 'td.tid = ttfd.tid');
   $query->fields('ttfd', array('name'));
   $query->addExpression('COUNT(tn.tid)', 'freq');
-//  $query->condition('td.vname', $vocabs, 'IN');
-//  $query->groupBy('td.tid');
-//  $query->orderBy('freq', 'DESC');
-////  $query->orderBy('name');
-//  if (!empty($limit) && !$all) {
-//    $query->range(0, $limit);
-//  }
+  $query->condition('td.vid', $vocabs, 'IN');
+  $query->groupBy('td.tid');
+  $query->groupBy('ttfd.name');
+  $query->orderBy('freq', 'DESC');
+  $query->orderBy('name');
+  if (!empty($limit) && !$all) {
+    $query->range(0, $limit);
+  }
   $terms = $query->execute()->fetchAllAssoc('tid');
-  ksm($terms);
   return $terms;
 }

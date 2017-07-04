@@ -39,6 +39,7 @@ function popular_tags_field_widget_entity_reference_autocomplete_tags_form_alter
     if (!empty($third_party_settings['popular_tags']['popular_tags']['use'])) {
       module_load_include('inc', 'popular_tags', 'popular_tags.widget');
       _popular_tags_inject($element, $context);
+      ksm($element);
     }
   }
 }

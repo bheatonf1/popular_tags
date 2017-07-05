@@ -3,7 +3,6 @@ popular_tags:
   css:
     component:
       popular_tags.css: {}
-      popular_tags-rtl.css: {}
   js:
     popular_tags.js: {}
   dependencies:
